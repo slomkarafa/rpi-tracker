@@ -36,3 +36,8 @@ class Motor:
     def change_direction(self):
         IO.output(self.dir0_pin, not IO.input(self.dir0_pin))
         IO.output(self.dir1_pin, not IO.input(self.dir1_pin))
+
+    def run(setting):
+        direction = 'FORWARD' if setting > 0 else 'REVERSE'
+        self.set_direction(direction)
+        self.set_speed(abs(setting))
