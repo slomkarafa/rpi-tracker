@@ -2,8 +2,6 @@ from sanic import Sanic
 from sanic.reaponse import html
 import time
 
-from config import CONFIG
-from config import STEERING
 app = Sanic()
 
 @app.route('/')
@@ -32,6 +30,6 @@ def log():
 
 
 
-def start():
+def init():
     app.run('0.0.0.0',port=CONFIG.port)
     return app

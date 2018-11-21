@@ -1,28 +1,48 @@
 import RPi.GPIO as GPIO
 import time
 from motor import Motor
+from steering import Rider
+import argparse
+import json
 
-#GPIO.setwarnings(False)
-#GPIO.setmode(GPIO.BOARD)
-#GPIO.setmode(GPIO.BCM)
-#GPIO.setup(17, GPIO.OUT)
+parser = argparse.ArgumentParser(description='Rpi-tracker main app')
+parser.add_argument('-c', '--config', description='Path to config file')
 
-#pwm = GPIO.PWM(17,100)
-#pwm.start(0)
-try:
-    x = 1
-    motor = Motor(17,27,22)
-    motor.set_direction('FORWARD')
-    while 1:
+# try:
+#     x = 1
+#     motor = Motor(17, 27, 22)
+#     motor.set_direction('FORWARD')
+#     while 1:
+#
+#         for x in range(100):
+#             motor.set_speed(x)
+#             time.sleep(0.1)
+#
+#         for x in range(100):
+#             motor.set_speed(100 - x)
+#             time.sleep(0.1)
+#
+#         motor.change_direction()
+# finally:
+#     GPIO.cleanup()
 
-        for x in range(100):
-            motor.set_speed(x)
-            time.sleep(0.1)
 
-        for x in range(100):
-            motor.set_speed(100-x)
-            time.sleep(0.1)
+def main(config):
+    r = config['MOTORS']['RIGHT']
+    l = config['MOTORS']['LEFT']
 
-        motor.change_direction() 
-finally:
-    GPIO.cleanup()
+    right_motor = Motor(r.pwm, r.dir_0, r.dir_1)
+    left_motor = Motor(l.pwm, l.dir_0, l.dir_1)
+
+    rider = Rider(left_motor, right_motor)
+
+
+
+
+if __name__ == '__main__':
+    args = parser.parse_arguments()
+    config = json.loads(args.config)
+    try:
+        main(config)
+    finally:
+        GPIO.cleanup()

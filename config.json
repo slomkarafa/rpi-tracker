@@ -1,0 +1,29 @@
+{
+        "SERVER": {
+            "port":8080
+        
+        }
+,
+    "STEERING": {
+            "FW": "FORWARD",
+            "RV": "REVERSE",
+            "LF": "LEFT",
+            "RH": "RIGHT",
+            "ST": "START",
+            "SP": "STOP",
+            "UP": "SPEEDUP",
+            "DN": "SPEEDDOWN"
+        },
+    "MOTORS": {
+        "LEFT":{
+            "pwm":0,
+            "dir_0":0,
+            "dir_1":0
+        },
+        "RIGHT":{
+            "pwm":17,
+            "dir_0":27,
+            "dir_1":22
+            }
+        }
+}
