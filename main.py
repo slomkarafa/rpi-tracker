@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from motor import Motor
+from server import init
 from steering import Rider
 import argparse
 import json
@@ -36,12 +37,13 @@ def main(config):
 
     rider = Rider(left_motor, right_motor)
 
-
+    init(config,rider)
 
 
 if __name__ == '__main__':
-    args = parser.parse_arguments()
+    args = parser.parse_args()
     config = json.loads(args.config)
+    print(json)
     try:
         main(config)
     finally:
