@@ -1,5 +1,5 @@
 from sanic import Sanic
-from sanic.reaponse import html
+from sanic.response import html
 import time
 
 
@@ -50,5 +50,20 @@ def init(config, rider):
     app.add_route(get_start_func(rider), '/start', methods=['PUT'])
     app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
 
-    app.run('0.0.0.0', port=config.SERVER.port)
+    app.run('0.0.0.0', port=config['port'])
     return app
+
+
+def test():
+    class TestRider():
+        def start(self, a, b):
+            print(f'Ride {a}, {b}')
+
+        def stop(self):
+            print('stop')
+
+    init({'port': 8080}, TestRider())
+
+
+if __name__ == "__main__":
+    test()

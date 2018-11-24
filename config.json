@@ -1,29 +1,27 @@
 {
-        "SERVER": {
-            "port":8080
-        
-        }
-,
-    "STEERING": {
-            "FW": "FORWARD",
-            "RV": "REVERSE",
-            "LF": "LEFT",
-            "RH": "RIGHT",
-            "ST": "START",
-            "SP": "STOP",
-            "UP": "SPEEDUP",
-            "DN": "SPEEDDOWN"
-        },
-    "MOTORS": {
-        "LEFT":{
-            "pwm":0,
-            "dir_0":0,
-            "dir_1":0
-        },
-        "RIGHT":{
-            "pwm":17,
-            "dir_0":27,
-            "dir_1":22
-            }
-        }
+  "SERVER": {
+    "port": 8080
+  },
+  "STEERING": {
+    "FW": "FORWARD",
+    "RV": "REVERSE",
+    "LF": "LEFT",
+    "RH": "RIGHT",
+    "ST": "START",
+    "SP": "STOP",
+    "UP": "SPEEDUP",
+    "DN": "SPEEDDOWN"
+  },
+  "MOTORS": {
+    "LEFT": {
+      "pwm": 24,
+      "dir_0": 23,
+      "dir_1": 18
+    },
+    "RIGHT": {
+      "pwm": 22,
+      "dir_0": 27,
+      "dir_1": 17
+    }
+  }
 }
