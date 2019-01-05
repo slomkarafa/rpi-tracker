@@ -1,15 +1,9 @@
 from sanic import Sanic
 from sanic.response import html
+from sanic.websocket import WebSocketProtocol
 import time
 
 
-# app = Sanic()
-#
-# @app.route('/')
-# def test(request)
-#     return html('no elo')
-#
-# @app.route('/go',methods=['PUT'],stream=True)
 # def go(request):
 #     dir = request.get('dir')
 #     if not dir:
@@ -23,11 +17,24 @@ import time
 #             if cmd is STEERING.SP:
 #                 break
 #             print(cmd)
-#
-#
-# @app.route('/logs')
-# def log():
-#     print('log requested')
+
+
+def get_go_func(rider):
+    async def go(request, ws):
+        try:
+            while True:
+                data = await ws.recv()
+                if data == 'stop':
+                    rider.stop()
+                else:
+                    x = list(map(int, data.strip().split(' ')))
+                    rider.start(x[0], x[1])
+        except Exception as e:
+            print(e)
+        finally:
+            rider.stop()
+    return go
+
 
 def get_start_func(rider):
     async def start(request):
@@ -47,10 +54,12 @@ def get_stop_func(rider):
 
 def init(config, rider):
     app = Sanic()
-    app.add_route(get_start_func(rider), '/start', methods=['PUT'])
-    app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
+    # app.add_route(get_start_func(rider), '/start', methods=['PUT'])
+    # app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
 
-    app.run('0.0.0.0', port=config['port'])
+    app.add_websocket_route(get_go_func(rider), '/go')
+
+    app.run('0.0.0.0', port=config['port'], protocol=WebSocketProtocol, debug=True)
     return app
 
 
