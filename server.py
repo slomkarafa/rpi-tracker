@@ -2,6 +2,7 @@ from sanic import Sanic
 from sanic.response import html
 from sanic.websocket import WebSocketProtocol
 import time
+import json
 
 
 # def go(request):
@@ -17,6 +18,7 @@ import time
 #             if cmd is STEERING.SP:
 #                 break
 #             print(cmd)
+from converter import circle_to_drives
 
 
 def get_go_func(rider):
@@ -24,11 +26,14 @@ def get_go_func(rider):
         try:
             while True:
                 data = await ws.recv()
+                # print(data)
                 if data == 'stop':
                     rider.stop()
                 else:
-                    x = list(map(int, data.strip().split(' ')))
-                    rider.start(x[0], x[1])
+                    # x = list(map(int, data.strip().split(' ')))
+                    response = json.loads(data)
+                    circle_to_drives(**response)
+                    # rider.start(response["angle"], response["power"])
         except Exception as e:
             print(e)
         finally:
@@ -52,12 +57,17 @@ def get_stop_func(rider):
     return stop
 
 
+def greeting(request):
+    return html('witam sznownych panstwa')
+
+
 def init(config, rider):
     app = Sanic()
     # app.add_route(get_start_func(rider), '/start', methods=['PUT'])
     # app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
 
     app.add_websocket_route(get_go_func(rider), '/go')
+    app.add_route(greeting,'/elo')
 
     app.run('0.0.0.0', port=config['port'], protocol=WebSocketProtocol, debug=True)
     return app
