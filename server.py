@@ -4,7 +4,6 @@ from sanic.websocket import WebSocketProtocol
 import time
 import json
 
-
 # def go(request):
 #     dir = request.get('dir')
 #     if not dir:
@@ -32,12 +31,13 @@ def get_go_func(rider):
                 else:
                     # x = list(map(int, data.strip().split(' ')))
                     response = json.loads(data)
-                    circle_to_drives(**response)
-                    # rider.start(response["angle"], response["power"])
+
+                    rider.start(*circle_to_drives(**response))
         except Exception as e:
             print(e)
         finally:
             rider.stop()
+
     return go
 
 
@@ -58,7 +58,8 @@ def get_stop_func(rider):
 
 
 def greeting(request):
-    return html('witam sznownych panstwa')
+    # return html('witam sznownych panstwa')
+    return html('<h1>KOCHAM KRISTINKE!!!!</h1><br/><h1>   <3<3   </h1>')
 
 
 def init(config, rider):
@@ -67,7 +68,7 @@ def init(config, rider):
     # app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
 
     app.add_websocket_route(get_go_func(rider), '/go')
-    app.add_route(greeting,'/elo')
+    app.add_route(greeting, '/elo')
 
     app.run('0.0.0.0', port=config['port'], protocol=WebSocketProtocol, debug=True)
     return app
