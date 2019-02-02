@@ -32,7 +32,7 @@ def get_go_func(rider):
                     # x = list(map(int, data.strip().split(' ')))
                     response = json.loads(data)
 
-                    rider.start(*circle_to_drives(**response))
+                    rider.ride(*circle_to_drives(**response))
         except Exception as e:
             print(e)
         finally:
@@ -76,7 +76,7 @@ def init(config, rider):
 
 def test():
     class TestRider():
-        def start(self, a, b):
+        def ride(self, a, b):
             print(f'Ride {a}, {b}')
 
         def stop(self):
