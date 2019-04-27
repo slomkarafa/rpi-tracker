@@ -5,8 +5,15 @@ class Rider:
         self.speed = 0
         self.ratio = 1
 
+        self.prev_l = 0
+        self.prev_r = 0
+
     def ride(self, left, right):
-        print(f"Ride: l{left} r{right}")
+        if self.prev_l is not left or self.prev_r is not right:
+            print(f"Ride: l{left} r{right}")
+        self.prev_l = left
+        self.prev_r = right
+
         self.l_m.run(left)
         self.r_m.run(right)
 
