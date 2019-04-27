@@ -4,19 +4,6 @@ from sanic.websocket import WebSocketProtocol
 import time
 import json
 
-# def go(request):
-#     dir = request.get('dir')
-#     if not dir:
-#         return html('no direcrion in request')
-#     print(f'going {dir}')
-#     if dir == STEERING.GO:
-#         while True:
-#             cmd = await request.stream.get()
-#             assert cmd in STEERING.values(), f'{cmd} is wrong cmmand, use one of following: {STEERING.values()}'
-#
-#             if cmd is STEERING.SP:
-#                 break
-#             print(cmd)
 from converter import circle_to_drives
 
 
@@ -41,20 +28,13 @@ def get_go_func(rider):
     return go
 
 
-def get_start_func(rider):
-    async def start(request):
-        print('riding')
-        rider.ride(100, 100)
+def get_pwm_tester(rider):
+    async def test_pwm(requet):
+        for x in range(0, 100, 10):
+            rider.ride(x, x)
+            time.sleep(5)
 
-    return start
-
-
-def get_stop_func(rider):
-    async def stop(request):
-        print('stop')
-        rider.stop()
-
-    return stop
+    return test_pwm
 
 
 def greeting(request):
@@ -64,11 +44,10 @@ def greeting(request):
 
 def init(config, rider):
     app = Sanic()
-    # app.add_route(get_start_func(rider), '/start', methods=['PUT'])
-    # app.add_route(get_stop_func(rider), '/stop', methods=['PUT'])
 
     app.add_websocket_route(get_go_func(rider), '/go')
     app.add_route(greeting, '/elo')
+    app.add_route(get_pwm_tester(rider), '/test-pwm')
 
     app.run('0.0.0.0', port=config['port'], protocol=WebSocketProtocol, debug=True)
     return app
