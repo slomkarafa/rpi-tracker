@@ -33,7 +33,6 @@ class Motor:
         return Motor(pi, pwm_pin, dir0_pin, dir1_pin)
 
     async def set_speed(self, dutycycle):
-        print(f'Speed hnged to {dutycycle}')
         await self.pi.set_PWM_dutycycle(self.pwm_pin, int(dutycycle*2.55))
 
     async def set_direction(self, direction):
