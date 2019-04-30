@@ -8,17 +8,17 @@ class Rider:
         self.prev_l = 0
         self.prev_r = 0
 
-    def ride(self, left, right):
+    async def ride(self, left, right):
         if self.prev_l is not left or self.prev_r is not right:
             print(f"Ride: l{left} r{right}")
         self.prev_l = left
         self.prev_r = right
 
-        self.l_m.run(left)
-        self.r_m.run(right)
+        await self.l_m.run(left)
+        await self.r_m.run(right)
 
-    def stop(self, kind='SOFT'):
+    async def stop(self, kind='SOFT'):
         print('stop')
         for m in (self.l_m, self.r_m):
-            m.set_speed(0 if kind == 'SOFT' else 100)
-            m.set_direction('STOP')
+            await m.set_speed(0 if kind == 'SOFT' else 100)
+            await m.set_direction('STOP')
