@@ -1,40 +1,45 @@
 from sanic import Sanic
-from sanic.response import html
+from sanic.response import html, text
 from sanic.websocket import WebSocketProtocol
 import time
 import json
+import apigpio
+import asyncio
 
 from converter import circle_to_drives
+from motor import Motor
+from steering import Rider
+
+app = Sanic()
 
 
-def get_go_func(rider):
-    async def go(request, ws):
-        try:
-            while True:
-                data = await ws.recv()
-                # print(data)
-                if data == 'stop':
-                    rider.stop()
-                else:
-                    # x = list(map(int, data.strip().split(' ')))
-                    response = json.loads(data)
+async def go(request, ws):
+    try:
+        while True:
+            data = await ws.recv()
+            # print(data)
+            if data == 'stop':
+                await request.app.rider.stop()
+            else:
+                # x = list(map(int, data.strip().split(' ')))
+                response = json.loads(data)
 
-                    rider.ride(*circle_to_drives(**response))
-        except Exception as e:
-            print(e)
-        finally:
-            rider.stop()
-
-    return go
+                await request.app.rider.ride(*circle_to_drives(**response))
+    except Exception as e:
+        print(e)
+    finally:
+        await request.app.rider.stop()
 
 
-def get_pwm_tester(rider):
-    async def test_pwm(requet):
-        for x in range(0, 100, 10):
-            rider.ride(x, x)
-            time.sleep(5)
 
-    return test_pwm
+
+async def test_pwm(request):
+    for x in range(0, 100, 10):
+        await request.app.rider.ride(x, x)
+        time.sleep(5)
+    await request.app.rider.stop()
+    return text('elo')
+
 
 
 def greeting(request):
@@ -42,14 +47,43 @@ def greeting(request):
     return html('<h1>KOCHAM KRISTINKE!!!!</h1><br/><h1>   <3<3   </h1>')
 
 
-def init(config, rider):
-    app = Sanic()
+# app = Sanic()
+# @app.listener('before-server-start')
+# def init(_app,loop):
+#     _app.rider
 
-    app.add_websocket_route(get_go_func(rider), '/go')
+# def start(config, rider):
+# localhost:8888
+
+@app.listener('before_server_start')
+async def init(_app, loop):
+    config = app.CONFIG
+    _app.pi = apigpio.Pi(_app.loop)
+    print('connecting..')
+    await _app.pi.connect(('localhost', 8888))
+    print('connected')
+    r = config['MOTORS']['RIGHT']
+    l = config['MOTORS']['LEFT']
+
+    right_motor = await Motor.create(_app.pi, r['pwm'], r['dir_0'], r['dir_1'])
+    left_motor = await Motor.create(_app.pi, l['pwm'], l['dir_0'], l['dir_1'])
+
+    _app.rider = Rider(left_motor, right_motor)
+    print('init finished')
+
+@app.listener('after_server_stop')
+async def close(_app, loop):
+    await _app.pi.stop()
+
+def start(config):
+    app.CONFIG = config
+
+    app.add_websocket_route(go, '/go')
     app.add_route(greeting, '/elo')
-    app.add_route(get_pwm_tester(rider), '/test-pwm')
+    app.add_route(test_pwm, '/test-pwm')
 
-    app.run('0.0.0.0', port=config['port'], protocol=WebSocketProtocol, debug=True)
+    app.run('0.0.0.0', port=config['SERVER']['port'], protocol=WebSocketProtocol, debug=True)
+    print('after_run')
     return app
 
 
@@ -61,7 +95,7 @@ def test():
         def stop(self):
             print('stop')
 
-    init({'port': 8080}, TestRider())
+    start({'port': 8080}, TestRider())
 
 
 if __name__ == "__main__":
