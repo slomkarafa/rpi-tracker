@@ -1,4 +1,7 @@
-class Rider:
+from abc import ABC, abstractmethod
+
+
+class BaseRider(ABC):
     def __init__(self, left_motor, right_motor):
         self.l_m = left_motor
         self.r_m = right_motor
@@ -22,3 +25,8 @@ class Rider:
         for m in (self.l_m, self.r_m):
             await m.set_speed(0 if kind == 'SOFT' else 100)
             await m.set_direction('STOP')
+
+    @classmethod
+    @abstractmethod
+    async def init(cls, loop):
+        ...
