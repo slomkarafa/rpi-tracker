@@ -7,38 +7,28 @@ from breezyslam.sensors import RPLidarA1
 from rplidar import RPLidar
 
 from config import SLAM
+from sensors.lidar.lidar_base import BaseLidar
 
 
 def mm2pix(mm):
     return int(mm / (SLAM['MAP_SIZE_METERS'] * 1000. / SLAM['MAP_SIZE_PIXELS']))
 
 
-class Lidar:
+class Lidar(BaseLidar):
 
     def __init__(self):
+        super().__init__()
         self.lidar = RPLidar(os.getenv('LIDAR_DEVICE', SLAM["LIDAR_DEVICE"]))
         self.slam = RMHC_SLAM(RPLidarA1(), SLAM['MAP_SIZE_PIXELS'], SLAM['MAP_SIZE_METERS'])
         self.trajectory = []
         self.mapbytes = bytearray(SLAM['MAP_SIZE_PIXELS'] * SLAM['MAP_SIZE_PIXELS'])
         self.prev_checksum = 0
-        self.listener = None
-        self.task = None
-
-    def __del__(self):
-        self.stop()
 
     async def stop(self):
-        if self.task:
-            self.task.cancel()
-            with suppress(asyncio.CancelledError):
-                await self.task
+        await super().stop()
         self.lidar.stop()
         self.lidar.stop_motor()
         self.lidar.disconnect()
-
-    async def start(self):
-        if not self.task:
-            self.task = asyncio.ensure_future(self.run)
 
     async def run(self):
         previous_distances = None
@@ -77,10 +67,3 @@ class Lidar:
                 await self.listener(self.mapbytes)
 
             self.prev_checksum = checksum
-
-    def subscribe(self, fn):
-        print('subscribed')
-        self.listener = fn
-
-    def unsubscribe(self):
-        self.listener = None

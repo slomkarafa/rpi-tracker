@@ -7,10 +7,9 @@ from sanic.websocket import WebSocketProtocol
 import time
 
 from config import SERVER
-# from sensors.lidar.lidar import Lidar
 
 from converter import circle_to_drives
-from sensors.lidar.lidar import Lidar
+from sensors import Lidar
 from steering import Rider
 
 app = Sanic()
@@ -18,8 +17,7 @@ app = Sanic()
 
 def sender(ws):
     async def send(msg):
-        # await ws.send(msg)
-        print('elo')
+        await ws.send(msg)
 
     return send
 
@@ -70,7 +68,7 @@ async def init(_app, loop):
 async def close(_app, loop):
     # await _app.pi.stop()
     await _app.lidar.stop()
-
+    # pass
 
 
 def run():
