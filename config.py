@@ -29,4 +29,11 @@ PIGPIO = {
     "PORT": 8888
 }
 
+SLAM = {
+    "MAP_SIZE_PIXELS": 500,
+    "MAP_SIZE_METERS": 10,
+    "LIDAR_DEVICE": '/dev/ttyUSB0',
+    "MIN_SAMPLES": 200
+}
+
 UNPLUGGED = True

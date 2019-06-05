@@ -17,3 +17,5 @@ class Rider(BaseRider):
         left_motor = await Motor.create(pi, MOTORS['LEFT'])
 
         return cls(left_motor, right_motor)
+
+
