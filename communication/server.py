@@ -1,5 +1,6 @@
 import asyncio
 import json
+import traceback
 
 from sanic import Sanic
 from sanic.response import html, text
@@ -37,9 +38,11 @@ async def go(request, ws):
 
                 await request.app.rider.ride(*circle_to_drives(**response))
     except Exception as e:
+        print(repr(e))
         print(e)
+        traceback.print_tb(e.__traceback__)
     finally:
-        request.app.lidar.unsunscibe()
+        request.app.lidar.unsubscribe()
         await request.app.rider.stop()
         print('disconnected')
 

@@ -31,5 +31,5 @@ async def go(request, ws):
     except Exception as e:
         print(e)
     finally:
-        # request.app.lidar.unsunscibe()
+        request.app.lidar.unsunscibe()
         await request.app.rider.stop()
