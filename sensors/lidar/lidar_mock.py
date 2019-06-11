@@ -20,6 +20,12 @@ DATA = [137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 1
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 157, 25, 187, 135, 209, 169, 73, 140, 9, 97, 116, 106, 8, 227, 5, 178,
         0, 69, 109, 104, 207, 36, 38, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]
 
+TEST_DATA = json.dumps({
+    # "data": str(bytes(200 * 200)),
+    "data": bytearray(DATA),
+    'dim': 200
+})
+
 
 class MockLidar(BaseLidar):
 
@@ -29,9 +35,4 @@ class MockLidar(BaseLidar):
             await asyncio.sleep(5)
             print(self.listener)
             if self.listener:
-                data = json.dumps({
-                    # "data": str(bytes(200 * 200)),
-                    "data": bytearray(DATA),
-                    'dim': 200
-                })
-                await self.listener(data)
+                await self.listener(TEST_DATA)

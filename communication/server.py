@@ -1,5 +1,5 @@
 import asyncio
-import json
+import ujson as json
 import traceback
 
 from sanic import Sanic
@@ -11,6 +11,7 @@ from config import SERVER
 
 from converter import circle_to_drives
 from sensors import Lidar
+from sensors.lidar.lidar_mock import TEST_DATA
 from steering import Rider
 
 app = Sanic()
@@ -19,7 +20,7 @@ app = Sanic()
 def sender(ws):
     async def send(msg):
         await ws.send(msg)
-
+        print('Message sent')
     return send
 
 
