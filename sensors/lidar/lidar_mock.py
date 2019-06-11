@@ -1,5 +1,5 @@
 import asyncio
-
+import ujson as json
 from sensors.lidar.lidar_base import BaseLidar
 
 
@@ -11,4 +11,8 @@ class MockLidar(BaseLidar):
             await asyncio.sleep(5)
             print(self.listener)
             if self.listener:
-                await self.listener(bytearray(200 * 200))
+                msg = json.dumps({
+                    'data': bytearray(200 * 200),
+                    'dim': 200
+                })
+                await self.listener(msg)

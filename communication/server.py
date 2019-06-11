@@ -16,8 +16,8 @@ app = Sanic()
 
 
 def sender(ws):
-    async def send(msg):
-        await ws.send(msg)
+    async def send(raw_msg):
+        await ws.send(str(raw_msg))
 
     return send
 
