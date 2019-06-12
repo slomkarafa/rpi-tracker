@@ -11,7 +11,6 @@ from config import SERVER
 
 from converter import circle_to_drives
 from sensors import Lidar
-from sensors.lidar.lidar_mock import TEST_DATA
 from steering import Rider
 
 app = Sanic()

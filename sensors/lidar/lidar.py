@@ -64,6 +64,6 @@ class Lidar(BaseLidar):
             print(self.listener)
             if self.listener and checksum != self.prev_checksum:
                 print(checksum)
-                await self.listener(self.mapbytes)
+                await self.listener(bytes(self.mapbytes))
 
             self.prev_checksum = checksum
