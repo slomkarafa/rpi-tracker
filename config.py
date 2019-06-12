@@ -36,4 +36,4 @@ SLAM = {
     "MIN_SAMPLES": 200
 }
 
-UNPLUGGED = True
+UNPLUGGED = 'True'
