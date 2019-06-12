@@ -35,7 +35,7 @@ class Lidar(BaseLidar):
         previous_angles = None
         iterator = self.lidar.iter_scans()
         next(iterator)
-
+        print('im in run')
         while True:
             items = [(q, 360 - angle, dist) for q, angle, dist in next(iterator)]
             distances = [item[2] for item in items]
@@ -61,9 +61,9 @@ class Lidar(BaseLidar):
 
                 self.mapbytes[y_pix * SLAM['MAP_SIZE_PIXELS'] + x_pix] = 0
             checksum = sum(self.mapbytes)
-            print(self.listener)
+            print(checksum)
             if self.listener and checksum != self.prev_checksum:
                 print(checksum)
-                await self.listener(bytes(self.mapbytes))
+                await self.listener(self.mapbytes)
 
             self.prev_checksum = checksum
