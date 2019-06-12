@@ -29,5 +29,4 @@ class MockLidar(BaseLidar):
             await asyncio.sleep(5)
             print(self.listener)
             if self.listener:
-                # await self.listener(TEST_DATA)
                 await self.listener(bytes(DATA))
