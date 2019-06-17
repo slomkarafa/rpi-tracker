@@ -17,7 +17,7 @@ def sender(ws):
 
 async def go(request, ws):
     try:
-        # request.app.lidar.subscribe(sender(ws))
+        # request.app.slam.subscribe(sender(ws))
         while True:
             data = await ws.recv()
             print(data)

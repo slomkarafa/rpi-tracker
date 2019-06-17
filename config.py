@@ -37,3 +37,8 @@ SLAM = {
 }
 
 UNPLUGGED = 'True'
+
+DISTRIBUTED = {
+    'SLAM': 50045,
+    'REST': 50046
+}

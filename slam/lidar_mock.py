@@ -1,9 +1,7 @@
-import asyncio
-
-import ujson as json
+import time
 # import json
 
-from sensors.lidar.lidar_base import BaseLidar
+from slam.lidar_base import BaseLidar
 
 DATA = bytearray([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 140, 0, 0, 1, 34, 4, 3, 0, 0, 0, 24, 1,
         248, 231, 0, 0, 0, 21, 80, 76, 84, 69, 255, 255, 255, 0, 0, 0, 220, 217, 207, 0, 100, 0, 176, 196, 222, 0, 153,
@@ -23,10 +21,10 @@ DATA = bytearray([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 
 
 class MockLidar(BaseLidar):
 
-    async def run(self):
+    def run(self):
         while True:
-            print('I am fully working lidar')
-            await asyncio.sleep(5)
+            print('I am fully working slam')
+            time.sleep(5)
             print(self.listener)
             if self.listener:
-                await self.listener(bytes(DATA))
+                self.listener(bytes(DATA))

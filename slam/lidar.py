@@ -1,13 +1,11 @@
-import asyncio
 import os
-from contextlib import suppress
 
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1
 from rplidar import RPLidar
 
 from config import SLAM
-from sensors.lidar.lidar_base import BaseLidar
+from slam.lidar_base import BaseLidar
 
 
 def mm2pix(mm):
@@ -16,21 +14,21 @@ def mm2pix(mm):
 
 class Lidar(BaseLidar):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, on_map_change):
+        super().__init__(on_map_change=on_map_change)
         self.lidar = RPLidar(os.getenv('LIDAR_DEVICE', SLAM["LIDAR_DEVICE"]))
         self.slam = RMHC_SLAM(RPLidarA1(), SLAM['MAP_SIZE_PIXELS'], SLAM['MAP_SIZE_METERS'])
         self.trajectory = []
         self.mapbytes = bytearray(SLAM['MAP_SIZE_PIXELS'] * SLAM['MAP_SIZE_PIXELS'])
         self.prev_checksum = 0
 
-    async def stop(self):
-        await super().stop()
+    def stop(self):
+        # await super().stop()
         self.lidar.stop()
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
-    async def run(self):
+    def run(self):
         previous_distances = None
         previous_angles = None
         iterator = self.lidar.iter_scans()
@@ -61,9 +59,9 @@ class Lidar(BaseLidar):
 
                 self.mapbytes[y_pix * SLAM['MAP_SIZE_PIXELS'] + x_pix] = 0
             checksum = sum(self.mapbytes)
-            print(self.listener)
-            if self.listener and checksum != self.prev_checksum:
+            print(self.map_listener)
+            if self.map_listener and checksum != self.prev_checksum:
                 print(checksum)
-                await self.listener(bytes(self.mapbytes))
+                self.map_listener(bytes(self.mapbytes))
 
             self.prev_checksum = checksum

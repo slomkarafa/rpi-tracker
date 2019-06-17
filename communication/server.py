@@ -10,7 +10,6 @@ import time
 from config import SERVER
 
 from converter import circle_to_drives
-from sensors import Lidar
 from steering import Rider
 
 app = Sanic()
@@ -20,13 +19,22 @@ def sender(ws):
     async def send(msg):
         await ws.send(msg)
         print('Message sent')
+
     return send
+
+
+async def send_map(request):
+    args = request.args
+    print(args)
+    if request.app.ws:
+        await request.app.ws.send('wlo')
 
 
 async def go(request, ws):
     print('connected')
     try:
-        request.app.lidar.subscribe(sender(ws))
+        # request.app.lidar.subscribe(sender(ws))
+        request.app.ws = ws
         while True:
             data = await ws.recv()
             print(data)
@@ -42,7 +50,8 @@ async def go(request, ws):
         print(e)
         traceback.print_tb(e.__traceback__)
     finally:
-        request.app.lidar.unsubscribe()
+        # request.app.lidar.unsubscribe()
+        request.app.ws = None
         await request.app.rider.stop()
         print('disconnected')
 
@@ -62,8 +71,7 @@ def greeting(request):
 
 async def init(_app, loop):
     _app.rider = await Rider.init(loop)
-    _app.lidar = Lidar()
-    await _app.lidar.start()
+    _app.ws = None
     print('init finished')
 
 
@@ -74,12 +82,21 @@ async def close(_app, loop):
     # pass
 
 
-def run():
+def create():
     app.register_listener(init, 'before_server_start')
     app.add_websocket_route(go, '/go')
     app.add_route(greeting, '/elo')
     app.add_route(test_pwm, '/test-pwm')
+    app.add_route(test_pwm, '/send-map', methods=['POST'])
 
-    app.run('0.0.0.0', port=SERVER['port'], protocol=WebSocketProtocol, debug=True)
+    _server = app.create_server('0.0.0.0', port=SERVER['port'], protocol=WebSocketProtocol,
+                                debug=True)
     print('after_run')
-    return app
+    return _server
+
+
+if __name__ == '__main__':
+    server = create()
+    loop = asyncio.get_event_loop()
+    task = asyncio.ensure_future(server)
+    loop.run_forever()
