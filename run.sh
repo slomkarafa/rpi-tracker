@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-source activate rpi-tracker
+#source activate rpi-tracker
+source activate rplidar
 
 trap 'kill %1' SIGINT
 
