@@ -7,6 +7,9 @@ from sanic.response import html, text
 from sanic.websocket import WebSocketProtocol
 import time
 
+import sys
+sys.path.append('../')
+
 from config import SERVER
 
 from converter import circle_to_drives
@@ -15,19 +18,27 @@ from steering import Rider
 app = Sanic()
 
 
+
 def sender(ws):
     async def send(msg):
-        await ws.send(msg)
+        await ws.send(bytes(msg))
         print('Message sent')
 
     return send
 
 
-async def send_map(request):
-    args = request.args
-    print(args)
-    if request.app.ws:
-        await request.app.ws.send('wlo')
+async def send_map(request, ws):
+    print('connected')
+    try:
+        while True:
+            data = await ws.recv()
+            print(data)
+    except Exception as e:
+        print(repr(e))
+        print(e)
+        traceback.print_tb(e.__traceback__)
+    finally:
+        print('disconnected')
 
 
 async def go(request, ws):
@@ -87,7 +98,7 @@ def create():
     app.add_websocket_route(go, '/go')
     app.add_route(greeting, '/elo')
     app.add_route(test_pwm, '/test-pwm')
-    app.add_route(test_pwm, '/send-map', methods=['POST'])
+    app.add_websocket_route(send_map, '/send-map')
 
     _server = app.create_server('0.0.0.0', port=SERVER['port'], protocol=WebSocketProtocol,
                                 debug=True)

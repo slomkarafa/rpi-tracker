@@ -25,6 +25,5 @@ class MockLidar(BaseLidar):
         while True:
             print('I am fully working slam')
             time.sleep(5)
-            print(self.listener)
-            if self.listener:
-                self.listener(bytes(DATA))
+            if self.on_map_change:
+                self.on_map_change(DATA)

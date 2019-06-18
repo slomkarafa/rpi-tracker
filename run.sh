@@ -2,9 +2,9 @@
 #source activate rpi-tracker
 source activate rplidar
 
-trap 'kill %1' SIGINT
+trap 'kill -9 $(lsof -t -i:8080)' EXIT
 
 PYTHONPATH=$PYTHONPATH:../ python communication/service.py &
 sleep 2
-PYTHONPATH=$PYTHONPATH:../ python slam/service.py
+sudo PYTHONPATH=$PYTHONPATH:../ $(which python) slam/run.py &
 

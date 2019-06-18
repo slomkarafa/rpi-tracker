@@ -12,7 +12,7 @@ DIRECTIONS = {
 class Motor(MotorI):
 
     def __init__(self, pi, pwm_pin, dir0_pin, dir1_pin):
-        super().__init__(pi, pwm_pin, dir0_pin, dir1_pin)
+        # super().__init__(pi, pwm_pin, dir0_pin, dir1_pin)
         self.pwm_pin = pwm_pin
         self.dir0_pin = dir0_pin
         self.dir1_pin = dir1_pin
@@ -20,9 +20,9 @@ class Motor(MotorI):
 
     @classmethod
     async def create(cls, pi, config):
-        pwm_pin = config['pwm_pin']
-        dir0_pin = config['dir0_pin']
-        dir1_pin = config['dir1_pin']
+        pwm_pin = config['pwm']
+        dir0_pin = config['dir_0']
+        dir1_pin = config['dir_1']
         await pi.set_mode(pwm_pin, apigpio.OUTPUT)
         await pi.set_mode(dir0_pin, apigpio.OUTPUT)
         await pi.set_mode(dir1_pin, apigpio.OUTPUT)
