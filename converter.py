@@ -32,4 +32,4 @@ def gen_testing_data():
         results.append([a,p,*res])
     print(results)
 
-gen_testing_data()
+# gen_testing_data()
