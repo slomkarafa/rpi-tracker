@@ -1,12 +1,10 @@
 import os
 import io
 
-import numpy as np
 from PIL import Image
 
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1
-from roboviz import MapVisualizer
 from rplidar import RPLidar
 
 from config import SLAM
@@ -27,7 +25,6 @@ class Lidar(BaseLidar):
         self.trajectory = []
         self.mapbytes = bytearray(SLAM['MAP_SIZE_PIXELS'] * SLAM['MAP_SIZE_PIXELS'])
         self.prev_checksum = 0
-        self.viz = MapVisualizer(SLAM['MAP_SIZE_PIXELS'], SLAM['MAP_SIZE_METERS'], 'SLAM')
 
     def stop(self):
         # await super().stop()

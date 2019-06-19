@@ -28,7 +28,9 @@ async def handle_manual_go(data):
     if data == 'stop':
         await rider.stop()
     else:
-        await rider.ride(data.get('right', 0), data.get('left', 0))
+        if abs(data['right'])>100 or abs(data['left'])>100:
+            print('ERROR KURWA')
+        await rider.ride(data.get('left', 0), data.get('right', 0))
 
 
 async def register_for_map(ws):
