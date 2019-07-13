@@ -1,5 +1,38 @@
 # Testing - unplugged env
 
+
+install rplidar and cartographer from chineese website,
+https://xrp001.github.io/tutorial/2018/05/18/Jetson-tx2-rplidar-a2-cartographer/
+roslaunch rplidar_ros rplidar.launch
+roslaunch cartographer_ros demo_revo_lds.launch
+
+{
+sudo apt-get inst all ros-<rosdistro>-rosbridge-server
+ sudo apt-get install -y ros-melodic-tf2-web-republisher
+
+source /opt/ros/melodic/setup.bash 
+
+pip install rospkg
+pip install pymongo
+pip install twisted
+}
+or
+tornado==4.5.3
+git clone https://github.com/RobotWebTools/rosbridge_suite.git
+git clone https://github.com/RobotWebTools/tf2_web_republisher.git
+
+catkin_make_isolated --install --use-ninja 
+
+
+roslaunch rplidar_ros rplidar.launch
+roslaunch cartographer_ros demo_revo_lds.launch
+
+roslaunch rosbridge_server rosbridge_websocket.launch
+rosrun tf2_web_republisher tf2_web_republisher
+
+
+
+
 ## installation
  - python3.7 is required
  - then: `pip install -r requirements.txt`
