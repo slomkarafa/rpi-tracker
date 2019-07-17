@@ -1,7 +1,7 @@
 import time
 # import json
 
-from slam.lidar_base import BaseLidar
+from lidar_base import BaseLidar
 
 DATA = bytearray([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 140, 0, 0, 1, 34, 4, 3, 0, 0, 0, 24, 1,
         248, 231, 0, 0, 0, 21, 80, 76, 84, 69, 255, 255, 255, 0, 0, 0, 220, 217, 207, 0, 100, 0, 176, 196, 222, 0, 153,

@@ -1,30 +1,28 @@
+import os
+
 import roslibpy
 import time
 # import ujson as json
 import json
 
+from config import CARTOGRAPHER_ROS
+from slam_interface import Slam
 
-class CartographerConnector:
-    def __init__(self, host='localhost', port=9090, save=False):
-        self.cli = roslibpy.Ros(host=host, port=port)
-        self.save = save
+
+class CartographerConnector(Slam):
+    def __init__(self):
+        self.cli = roslibpy.Ros(host=os.getenv('CARTOGRAPHER_HOST', CARTOGRAPHER_ROS['HOST']),
+                                port=os.getenv('CARTOGRAPHER_PORT', CARTOGRAPHER_ROS['PORT']))
         self.map_listener = None
         self.submap_list_listener = None
         self.submap_query_service = None
         self.trajectory_query_service = None
-        self.chkpt = time.time()
         self.cli.run()
-        self.a = 0
-        self.b = 0
-        self.c = 0
 
-    def register_for_map(self, callback):
+    def register_map_listener(self, callback):
         self.map_listener = roslibpy.Topic(self.cli, '/map', 'nav_msgs/OccupancyGrid')
 
         def wrapped_callback(msg):
-            then = self.chkpt
-            self.chkpt = time.time()
-            print(f'Between maps: {self.chkpt - then}')
             if self.save:
                 with open(f'data/map_{self.b}.json', 'x') as file:
                     file.write(json.dumps(msg))
@@ -38,7 +36,7 @@ class CartographerConnector:
         print('Error:')
         print(msg)
 
-    def handle_submap_list(self, callback):
+    def _handle_submap_list(self, callback):
         self.chkpt = time.time()
 
         def handler(msg):
@@ -64,15 +62,18 @@ class CartographerConnector:
 
         return handler
 
-    def register_for_submap(self, callback):
+    def register_submap_listener(self, callback):
         self.submap_list_listener = roslibpy.Topic(self.cli, '/submap_list', 'cartographer_ros_msgs/SubmapList')
         self.submap_query_service = roslibpy.Service(self.cli, '/submap_query', '/cartographer_ros_msgs/SubmapQuery')
-        self.submap_list_listener.subscribe(self.handle_submap_list(callback))
+        self.submap_list_listener.subscribe(self._handle_submap_list(callback))
 
-    @staticmethod
-    def handle_trajectory(callback):
+    def _handle_trajectory(self, callback):
         def handle_raw(raw_callback):
-            callback(raw_callback.get('trajectory', [None])[-1])
+            msg = raw_callback.get('trajectory', [None])[-1]
+            if self.save:
+                with open(f'data/trajectory_{self.a}.json', 'x') as file:
+                    file.write(json.dumps(msg))
+            callback(msg)
 
         return handle_raw
 
@@ -82,7 +83,7 @@ class CartographerConnector:
 
         def call_trajectory():
             request = roslibpy.ServiceRequest({"trajectory_id": 0})
-            self.submap_query_service.call(request, self.handle_trajectory(callback), self.error)
+            self.trajectory_query_service.call(request, self._handle_trajectory(callback), self.error)
 
         return call_trajectory
 
@@ -90,18 +91,46 @@ class CartographerConnector:
         self.cli.terminate()
 
 
-x = CartographerConnector()
-
-
 def call(msg):
     # pass
     print(msg)
 
 
-if __name__=='__main__':
+class TimeCaller:
+    def __init__(self):
+        self.chkpt = time.time()
+
+    def call(self, callback):
+        def wrapped(msg):
+            then = self.chkpt
+            self.chkpt = time.time()
+            callback(msg)
+            print(f'Between maps: {self.chkpt - then}')
+
+        return wrapped
+
+
+class SaveCaller:
+    def __init__(self, base_name):
+        self.base_name = base_name
+        self.counter = 0
+
+    def call(self, callback):
+        def wrapped(msg):
+            callback(msg)
+            with open(f'data/{self.base_name}_{self.counter}.json', 'x') as file:
+                file.write(json.dumps(msg))
+            self.counter += 1
+
+        return wrapped
+
+
+if __name__ == '__main__':
+    x = CartographerConnector()
+
     # x.register_for_submap(call)
-    x.register_for_map(call)
-    # x.register_for_trajectory(call)
+    # x.register_map_listener(call)
+    x.register_trajectory_service(call)()
     try:
         while True:
             pass
