@@ -182,3 +182,8 @@ venv.bak/
 
 .gitignore
 .idea/
+
+# ros
+ros/*
+!ros/cartographer_config.lua
+!ros/slam.launch
