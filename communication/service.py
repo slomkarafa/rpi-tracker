@@ -1,9 +1,10 @@
 import asyncio
+import os
 import websockets
 import ujson as json
 import sys
 
-sys.path.append('../')
+sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/../')
 
 from steering import Rider
 

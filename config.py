@@ -30,7 +30,7 @@ PIGPIO = {
 }
 
 HARDWARE_ACTIVE = {
-    'LIDAR': True,
+    'LIDAR': False,
     'GPIO': False
 }
 
