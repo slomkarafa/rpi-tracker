@@ -6,7 +6,7 @@ import time
 import json
 
 from config import CARTOGRAPHER_ROS
-from slam_interface import Slam
+from slam.slam_interface import Slam
 
 
 class CartographerConnector(Slam):
