@@ -25,10 +25,12 @@ sudo apt-get install -y python-rosdep python-rosinstall-generator python-wstool 
 
 sudo rosdep init
 rosdep update
-rosinstall_generator ros_comm sensor_msgs pcl_msgs nav_msgs eigen_conversions visualization_msgs --rosdistro melodic --deps --wet-only --tar > melodic-ros_comm-wet.rosinstall
+#rosinstall_generator ros_comm sensor_msgs pcl_msgs eigen_conversions visualization_msgs trajectory_msgs urdf --rosdistro melodic --deps --wet-only --tar > melodic-ros_comm-wet.rosinstall
+
+rosinstall_generator ros_comm sensor_msgs pcl_msgs eigen_conversions visualization_msgs --rosdistro melodic --deps --wet-only --tar > melodic-ros_comm-wet.rosinstall
 wstool init src melodic-ros_comm-wet.rosinstall
 
-#!
+#! on rpi add line to catographer CMakes.txt: set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
 wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
 wstool update -t src
 
