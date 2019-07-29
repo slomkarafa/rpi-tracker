@@ -31,7 +31,7 @@ PIGPIO = {
 
 HARDWARE_ACTIVE = {
     'LIDAR': False,
-    'GPIO': False
+    'GPIO': True
 }
 
 CARTOGRAPHER_ROS = {
