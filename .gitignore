@@ -187,3 +187,4 @@ venv.bak/
 ros/*
 !ros/cartographer_config.lua
 !ros/slam.launch
+src/*
