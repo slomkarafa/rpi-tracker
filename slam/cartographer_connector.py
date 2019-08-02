@@ -10,6 +10,7 @@ from slam.slam_interface import Slam
 
 
 class CartographerConnector(Slam):
+
     def __init__(self):
         self.cli = roslibpy.Ros(host=os.getenv('CARTOGRAPHER_HOST', CARTOGRAPHER_ROS['HOST']),
                                 port=os.getenv('CARTOGRAPHER_PORT', CARTOGRAPHER_ROS['PORT']))

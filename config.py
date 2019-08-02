@@ -1,5 +1,6 @@
 SERVER = {
-    "port": 8080
+    "HOST": '0.0.0.0',
+    "PORT": 8080
 }
 STEERING = {
     "FW": "FORWARD",
@@ -31,7 +32,7 @@ PIGPIO = {
 
 HARDWARE_ACTIVE = {
     'LIDAR': False,
-    'GPIO': True
+    'GPIO': False
 }
 
 CARTOGRAPHER_ROS = {

@@ -1,6 +1,6 @@
 import os
 
-from slam_interface import Slam
+from slam.slam_interface import Slam
 from utils.files import load_json
 
 

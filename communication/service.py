@@ -10,33 +10,50 @@ from steering import Rider
 
 loop = asyncio.get_event_loop()
 queue = asyncio.Queue(loop=loop)
-registered = set()
+registered = {
+    "app": set(),
+    "sensors": set()
+}
 
 rider = loop.run_until_complete(Rider.init(loop))
 
 
-async def handle_map(data):
+async def handle_map(ws, data):
     try:
-        if registered:
-            await asyncio.wait([ws.send(bytes(data)) for ws in registered])
+        if registered['app']:
+            await asyncio.wait([ws.send(bytes(data)) for ws in registered['app']])
             pass
     except Exception as e:
         print(e)
         # registered.remove(ws)
 
 
-async def handle_manual_go(data):
+async def handle_manual_go(ws, data):
     if data == 'stop':
         await rider.stop()
     else:
-        if abs(data['right'])>100 or abs(data['left'])>100:
+        if abs(data['right']) > 100 or abs(data['left']) > 100:
             print('ERROR KURWA')
         await rider.ride(data.get('left', 0), data.get('right', 0))
 
 
-async def register_for_map(ws):
-    print('registering for map')
-    registered.add(ws)
+async def register(ws, data):
+    print('registering ')
+    registered[data].add(ws)
+    if data == 'app':
+        await is_saving(ws, data)
+
+
+async def set_saving(ws, data):
+    await asyncio.wait([ws.send(json.dumps({'action': 'set_saving', 'data': data})) for ws in registered['sensors']])
+
+
+async def is_saving(ws, data):
+    await asyncio.wait([ws.send(json.dumps({'action': 'is_saving'})) for ws in registered['sensors']])
+
+
+async def saving(ws, data):
+    await asyncio.wait([ws.send(json.dumps({'action': 'saving', 'data': data})) for ws in registered['app']])
 
 
 async def que_producer(msg):
@@ -46,15 +63,16 @@ async def que_producer(msg):
 async def consumer(msg, ws):
     msg = json.loads(msg)
     action = msg.get('action', '')
-    if action == 'register_for_map':
-        await register_for_map(ws)
-        return
     fn = {
         'map': handle_map,
-        'manual': handle_manual_go
+        'manual': handle_manual_go,
+        'register': register,
+        'set_saving': set_saving,
+        'is_saving': is_saving,
+        'saving': saving
     }.get(action)
     if fn:
-        await fn(msg.get('data'))
+        await fn(ws, msg.get('data'))
 
 
 async def producer(queue):
