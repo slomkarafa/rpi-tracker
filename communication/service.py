@@ -53,6 +53,7 @@ async def is_saving(ws, data):
 
 
 async def saving(ws, data):
+    print(f'Sending saving state: {data}')
     await asyncio.wait([ws.send(json.dumps({'action': 'saving', 'data': data})) for ws in registered['app']])
 
 

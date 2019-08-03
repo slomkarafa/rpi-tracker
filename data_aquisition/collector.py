@@ -55,11 +55,13 @@ async def main():
             raw_resp = await ws.recv()
             resp = json.loads(raw_resp)
             if resp['action'] == 'set_saving':
+                print(f'Saving switch {resp["data"]}')
                 if resp['data']:
                     await collector.set_saver(Saver('./'))
                 else:
                     await collector.del_saver()
-            await ws.send(json.dumps({'action': 'saving', 'data': collector.is_saver()}))
+            # await ws.send(json.dumps({'action': 'saving', 'data': await collector.is_saver()}))
+            await ws.send(json.dumps({'action': 'saving', 'data': True}))
 
 
 if __name__ == "__main__":
