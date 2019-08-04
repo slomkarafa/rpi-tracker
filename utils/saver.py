@@ -1,7 +1,10 @@
 from datetime import datetime
+from pathlib import Path
+
 
 class Saver:
     def __init__(self, save_path, name=None):
+        Path(save_path).mkdir(exist_ok=True, parents=True)
         self.name = name or str(datetime.now().strftime("%d:%m:%Y_%H:%M:%S.csv"))
         self.file = open(f'{save_path}/{self.name}', 'a')
 
@@ -12,17 +15,5 @@ class Saver:
         self.file.close()
 
     def __del__(self):
-        self.finish()
-
-
-# def gather_data(saver):
-#     async def collector()
-
-# class SaverHandler:
-#     def __init__(self):
-#         self.saver = None
-#         self.collector = None
-#
-#     def start(self, loop):
-#         if not self.saver:
-#             self.collector = loop.run_until_complete(gather_data(saver))
+        if not self.file.closed:
+            self.finish()

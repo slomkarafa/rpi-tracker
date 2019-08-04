@@ -20,11 +20,12 @@ class Slam(ABC):
     def pose_caller(self):
         result = PoseCaller()
 
-        service = self.register_trajectory_service(PoseCaller.call)
+        service = self.register_trajectory_service(result.call)
 
         def caller():
             result.reset()
             service()
+
             while not result.pose:
                 pass
             return result.pose
