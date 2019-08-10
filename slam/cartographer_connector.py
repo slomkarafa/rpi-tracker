@@ -24,10 +24,6 @@ class CartographerConnector(Slam):
         self.map_listener = roslibpy.Topic(self.cli, '/map', 'nav_msgs/OccupancyGrid')
 
         def wrapped_callback(msg):
-            if self.save:
-                with open(f'data/map_{self.b}.json', 'x') as file:
-                    file.write(json.dumps(msg))
-            self.b += 1
             callback(msg)
 
         self.map_listener.subscribe(wrapped_callback)

@@ -8,7 +8,10 @@ class SensorData:
     z: float
 
     def __repr__(self):
-        return f'{self.x},{self.y}, {self.z}'
+        return f'{self.x},{self.y},{self.z}'
+
+    def __str__(self):
+        return self.__repr__()
 
 
 @dataclass
@@ -17,8 +20,15 @@ class IMUData:
     gyro: SensorData
     mag: SensorData
 
+    @staticmethod
+    def header():
+        return ",".join([f'{sens}_{ax}' for sens in ('acc', 'gyro', 'mag') for ax in ('x', 'y', 'z')])
+
     def __repr__(self):
         return f'{self.acc},{self.gyro},{self.mag}'
+
+    def __str__(self):
+        return self.__repr__()
 
     @classmethod
     def parse(cls, acc, gyro, mag):

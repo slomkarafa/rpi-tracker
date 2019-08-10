@@ -7,6 +7,8 @@ import time
 
 sys.path.append('../')
 
+from imu.imu_model import IMUData
+from slam.pose_model import PoseData
 from config import SERVER
 from imu import IMU
 from slam import Slam
@@ -20,9 +22,10 @@ class DataCollector:
     async def set_saver(self, saver):
         if not self.saver:
             self.saver = saver
+            await self.saver.add(IMUData.header(), PoseData.header())
 
     async def del_saver(self):
-        self.saver.finish()
+        await self.saver.finish()
         self.saver = None
 
     async def is_saver(self):
@@ -37,12 +40,12 @@ class DataCollector:
                 imu_res = imu.get_measurements()
                 slam_res = slam_pose()
                 if self.saver:
-                    self.saver.add(imu_res, slam_res)
+                    await self.saver.add(imu_res, slam_res)
                 print(f'Data collection time: {time.time() - chkpt}')
                 await asyncio.sleep(0.1)
         finally:
             if self.saver:
-                self.saver.finish()
+                await self.saver.finish()
 
 
 async def main():
@@ -57,7 +60,7 @@ async def main():
             if resp['action'] == 'set_saving':
                 print(f'Saving switch {resp["data"]}')
                 if resp['data'] and not await collector.is_saver():
-                    await collector.set_saver(Saver('../data/'))
+                    await collector.set_saver(await Saver.create('../data/'))
                 else:
                     await collector.del_saver()
             await ws.send(json.dumps({'action': 'saving', 'data': await collector.is_saver()}))
