@@ -45,16 +45,19 @@ async def register(ws, data):
 
 
 async def set_saving(ws, data):
-    await asyncio.wait([ws.send(json.dumps({'action': 'set_saving', 'data': data})) for ws in registered['sensors']])
+    if registered['sensors']:
+        await asyncio.wait([ws.send(json.dumps({'action': 'set_saving', 'data': data})) for ws in registered['sensors']])
 
 
 async def is_saving(ws, data):
-    await asyncio.wait([ws.send(json.dumps({'action': 'is_saving'})) for ws in registered['sensors']])
+    if registered['sensors']:
+        await asyncio.wait([ws.send(json.dumps({'action': 'is_saving'})) for ws in registered['sensors']])
 
 
 async def saving(ws, data):
     print(f'Sending saving state: {data}')
-    await asyncio.wait([ws.send(json.dumps({'action': 'saving', 'data': data})) for ws in registered['app']])
+    if registered['app']:
+        await asyncio.wait([ws.send(json.dumps({'action': 'saving', 'data': data})) for ws in registered['app']])
 
 
 async def que_producer(msg):

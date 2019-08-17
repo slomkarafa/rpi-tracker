@@ -51,7 +51,7 @@ class DataCollector:
 async def main():
     collector = DataCollector()
     collector_future = asyncio.ensure_future(collector.run())
-    uri = f"ws://{SERVER['HOST']}:{SERVER['PORT']}"
+    uri = f"ws://{SERVER['HOST']}:{SERVER['PORT']}/collector"
     async with websockets.connect(uri) as ws:
         await ws.send(json.dumps({"action": "register", "data": "sensors"}))
         while True:
@@ -69,3 +69,4 @@ async def main():
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
+

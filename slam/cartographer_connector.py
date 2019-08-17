@@ -18,6 +18,7 @@ class CartographerConnector(Slam):
         self.submap_list_listener = None
         self.submap_query_service = None
         self.trajectory_query_service = None
+        self.trajectory_result = PoseCaller()
         self.cli.run()
 
     def register_map_listener(self, callback):
@@ -67,9 +68,6 @@ class CartographerConnector(Slam):
     def _handle_trajectory(self, callback):
         def handle_raw(raw_callback):
             msg = raw_callback.get('trajectory', [None])[-1]
-            if self.save:
-                with open(f'data/trajectory_{self.a}.json', 'x') as file:
-                    file.write(json.dumps(msg))
             callback(msg)
 
         return handle_raw
@@ -81,6 +79,7 @@ class CartographerConnector(Slam):
         def call_trajectory():
             request = roslibpy.ServiceRequest({"trajectory_id": 0})
             self.trajectory_query_service.call(request, self._handle_trajectory(callback), self.error)
+            # self.trajectory_query_service.call(request, callback, self.error)
 
         return call_trajectory
 
@@ -90,6 +89,7 @@ class CartographerConnector(Slam):
 
 def call(msg):
     # pass
+    print('witam serdecznie')
     print(msg)
 
 
@@ -122,12 +122,45 @@ class SaveCaller:
         return wrapped
 
 
-if __name__ == '__main__':
-    x = CartographerConnector()
+class PoseCaller:
+    def __init__(self):
+        self.pose = None
 
-    # x.register_for_submap(call)
+    def call(self, resp):
+        print('parsingpose')
+        # self.pose = PoseData.parse(resp['pose'])
+        self.pose = True
+
+    def reset(self):
+        self.pose = None
+
+
+def x():
+    x = CartographerConnector()
+    result = PoseCaller()
+    service = x.register_trajectory_service(result.call)
+
+    def caller(e):
+        result.reset()
+        print('callingservice')
+        service()
+        print('waiting for response')
+        while not result.pose:
+            pass
+        return result.pose
+
+    x.register_map_listener(caller)
     # x.register_map_listener(call)
-    x.register_trajectory_service(call)()
+    # x.register_trajectory_service(caller.call(lambda _: None))()
+
+
+
+
+
+
+if __name__ == '__main__':
+    x()
+
     try:
         while True:
             pass

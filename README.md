@@ -5,6 +5,7 @@ install rplidar and cartographer from chineese website,
 https://xrp001.github.io/tutorial/2018/05/18/Jetson-tx2-rplidar-a2-cartographer/
 roslaunch rplidar_ros rplidar.launch
 roslaunch cartographer_ros demo_revo_lds.launch
+roslaunch rosbridge_server rosbridge_websocket.launc
 
 {
 sudo apt-get inst all ros-<rosdistro>-rosbridge-server
