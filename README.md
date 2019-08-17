@@ -67,3 +67,6 @@ tar -xvf RPi.GPIO-0.6.4.tar.gz
 cd RPi.GPIO-0.6.4/
 python setup.py install
 cd .. && rm -rf RPi.GPIO-0.*
+
+
+sudo apt-get install pigpio
