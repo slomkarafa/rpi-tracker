@@ -1,4 +1,4 @@
-from slam import Lidar
+from trash.slam import Lidar
 
 
 class SlamFacade:

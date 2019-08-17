@@ -1,11 +1,6 @@
-import os
-import sys
+from utils.helpers import should_use
 
-from config import UNPLUGGED
-
-sys.path.append('../')
-
-if os.getenv('UNPLUGGED', UNPLUGGED) == 'True':
-    from slam.lidar_mock import MockLidar as Lidar
+if should_use('LIDAR'):
+    from slam.cartographer_connector import CartographerConnector as Slam
 else:
-    from slam.lidar import Lidar
+    from slam.mock import SlamMock as Slam

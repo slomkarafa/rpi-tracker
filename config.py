@@ -1,5 +1,6 @@
 SERVER = {
-    "port": 8080
+    "HOST": '0.0.0.0',
+    "PORT": 8080
 }
 STEERING = {
     "FW": "FORWARD",
@@ -29,15 +30,15 @@ PIGPIO = {
     "PORT": 8888
 }
 
-SLAM = {
-    "MAP_SIZE_PIXELS": 500,
-    "MAP_SIZE_METERS": 10,
-    "LIDAR_DEVICE": '/dev/ttyUSB0',
-    # "MIN_SAMPLES": 200
-    "MIN_SAMPLES": 100
+HARDWARE_ACTIVE = {
+    'LIDAR': True,
+    'GPIO': True
 }
 
-UNPLUGGED = 'True'
+CARTOGRAPHER_ROS = {
+    'HOST': 'localhost',
+    'PORT': 9090
+}
 
 DISTRIBUTED = {
     'SLAM': 50045,

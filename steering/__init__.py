@@ -1,8 +1,6 @@
-import os
+from utils.helpers import should_use
 
-from config import UNPLUGGED
-
-if os.getenv('UNPLUGGED', UNPLUGGED) == 'True':
-    from steering.rider.rider_unplugged import UnpluggedRider as Rider
-else:
+if should_use('GPIO'):
     from steering.rider.rider import Rider
+else:
+    from steering.rider.rider_unplugged import UnpluggedRider as Rider

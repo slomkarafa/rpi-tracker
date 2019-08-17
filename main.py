@@ -1,5 +1,5 @@
 # import RPi.GPIO as GPIO
-from communication.server import run
+from trash.communication.server import run
 import argparse
 
 

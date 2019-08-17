@@ -8,7 +8,7 @@ from breezyslam.sensors import RPLidarA1
 from rplidar import RPLidar
 
 from config import SLAM
-from slam.lidar_base import BaseLidar
+from lidar_base import BaseLidar
 
 
 def mm2pix(mm):
