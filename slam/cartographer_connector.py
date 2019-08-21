@@ -77,11 +77,15 @@ class CartographerConnector(Slam):
         self.trajectory_query_service = roslibpy.Service(self.cli, '/trajectory_query',
                                                          '/cartographer_ros_msgs/TrajectoryQuery')
 
-        def call_trajectory(exact_callback=None):
+        def call_trajectory(exact_callback=None, msg=None):
             callback = exact_callback if exact_callback else main_callback
             request = roslibpy.ServiceRequest({"trajectory_id": 0})
-            self.trajectory_query_service.call(request, self._handle_trajectory(callback), self.error)
+            # self.trajectory_query_service.call(request, self._handle_trajectory(callback), self.error)
+            if msg:
+                print(f'before {msg}')
             self.trajectory_query_service.call(request, callback, self.error)
+            if msg:
+                print(f'after {msg}')
 
         return call_trajectory
 
@@ -90,21 +94,21 @@ class CartographerConnector(Slam):
 
 
 def call(msg):
-    # pass
-    print('witam serdecznie')
-    print(msg)
+    pass
+    # print(msg)
 
 
 class TimeCaller:
     def __init__(self):
         self.chkpt = time.time()
 
-    def call(self, callback):
+    def call(self, callback, count):
         def wrapped(msg):
             then = self.chkpt
             self.chkpt = time.time()
             callback(msg)
             print(f'Between maps: {self.chkpt - then}')
+            print(f'after{count} {self.chkpt}')
 
         return wrapped
 
@@ -126,13 +130,13 @@ class SaveCaller:
 class SaveCaller2:
     def __init__(self, base_name):
         self.base_name = base_name
-        self.file = open(base_name, 'a')
+        self.file = open(base_name, 'w')
         self.file.write('ts,data\n')
 
     def call(self, callback):
         def wrapped(msg):
             callback(msg)
-            self.file.write(f'{time.time()},{json.dumps(msg)}\n')
+            self.file.write(f'{time.time()};{json.dumps(dict(msg))}\n')
 
         return wrapped
 
@@ -152,33 +156,44 @@ class PoseCaller:
         self.pose = None
 
 
-def test_0():
-    x = CartographerConnector()
-    service = x.register_trajectory_service(result.call)
+def test_0(x, save, timer):
+    service = x.register_trajectory_service()
 
-    def caller(e):
-        result.reset()
-        print('callingservice')
-        service()
-        print('waiting for response')
-        while not result.pose:
-            pass
-        return result.pose
-
-    x.register_map_listener(caller)
+    print(f'1 {time.time()}')
+    service(save.call(timer.call(call, 1)), msg=1)
+    time.sleep(1)
+    print(f'2 {time.time()}')
+    service(save.call(timer.call(call, 2)),msg=2)
+    print(f'3 {time.time()}')
+    service(save.call(timer.call(call, 3)),msg=3)
+    # x.register_map_listener(caller)
     # x.register_map_listener(call)
     # x.register_trajectory_service(caller.call(lambda _: None))()
 
 
-test
-
-
-
 if __name__ == '__main__':
-    x()
+    save = SaveCaller2('data/test0.csv')
+    timer = TimeCaller()
+    x = CartographerConnector()
 
+    test_0(x, save, timer)
+    print('tu jestem')
     try:
         while True:
             pass
     except KeyboardInterrupt:
-        del x
+        del save
+
+
+def analyze():
+    with open('data/test0.csv') as f:
+        header = f.readline()
+        res = []
+        for _ in (1, 2, 3):
+            row = f.readline().split(';')
+            res.append(json.loads(row[1]))
+        for x in res:
+            y = x['trajectory'][-3:]
+            for z in y:
+                print(z)
+            print()
