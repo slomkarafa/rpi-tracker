@@ -49,7 +49,7 @@ echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 
 source ~/.bashrc
 workon tracker
-pip install tornado==4.5.3
+    pip install tornado==4.5.3
 mv src ros_src
 mkdir src
 cd src

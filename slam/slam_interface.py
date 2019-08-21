@@ -37,7 +37,6 @@ class PoseCaller:
         self.pose = None
 
     def call(self, resp):
-        print(resp)
         self.pose = PoseData.parse(resp['pose'])
 
     def reset(self):

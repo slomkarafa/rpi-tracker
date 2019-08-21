@@ -38,11 +38,14 @@ class DataCollector:
             while True:
                 chkpt = time.time()
                 imu_res = imu.get_measurements()
+                chkpt2 = time.time()
+                print(f'IMu time {chkpt2-chkpt}')
                 slam_res = slam_pose()
+                print(f'slam time: {time.time()-chkpt2}')
                 if self.saver:
                     await self.saver.add(imu_res, slam_res)
                 print(f'Data collection time: {time.time() - chkpt}')
-                await asyncio.sleep(0.1)
+                # await asyncio.sleep(0.1)
         finally:
             if self.saver:
                 await self.saver.finish()
@@ -58,7 +61,7 @@ async def main():
             raw_resp = await ws.recv()
             resp = json.loads(raw_resp)
             if resp['action'] == 'set_saving':
-                print(f'Saving switch {resp["data"]}')
+                # print(f'Saving switch {resp["data"]}')
                 if resp['data'] and not await collector.is_saver():
                     await collector.set_saver(await Saver.create('../data/'))
                 else:

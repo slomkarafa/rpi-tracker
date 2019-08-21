@@ -67,19 +67,21 @@ class CartographerConnector(Slam):
 
     def _handle_trajectory(self, callback):
         def handle_raw(raw_callback):
+            print(raw_callback)
             msg = raw_callback.get('trajectory', [None])[-1]
             callback(msg)
 
         return handle_raw
 
-    def register_trajectory_service(self, callback):
+    def register_trajectory_service(self, main_callback=None):
         self.trajectory_query_service = roslibpy.Service(self.cli, '/trajectory_query',
                                                          '/cartographer_ros_msgs/TrajectoryQuery')
 
-        def call_trajectory():
+        def call_trajectory(exact_callback=None):
+            callback = exact_callback if exact_callback else main_callback
             request = roslibpy.ServiceRequest({"trajectory_id": 0})
             self.trajectory_query_service.call(request, self._handle_trajectory(callback), self.error)
-            # self.trajectory_query_service.call(request, callback, self.error)
+            self.trajectory_query_service.call(request, callback, self.error)
 
         return call_trajectory
 
@@ -121,6 +123,21 @@ class SaveCaller:
 
         return wrapped
 
+class SaveCaller2:
+    def __init__(self, base_name):
+        self.base_name = base_name
+        self.file = open(base_name, 'a')
+        self.file.write('ts,data\n')
+
+    def call(self, callback):
+        def wrapped(msg):
+            callback(msg)
+            self.file.write(f'{time.time()},{json.dumps(msg)}\n')
+
+        return wrapped
+
+    def __del__(self):
+        self.file.close()
 
 class PoseCaller:
     def __init__(self):
@@ -135,9 +152,8 @@ class PoseCaller:
         self.pose = None
 
 
-def x():
+def test_0():
     x = CartographerConnector()
-    result = PoseCaller()
     service = x.register_trajectory_service(result.call)
 
     def caller(e):
@@ -154,7 +170,7 @@ def x():
     # x.register_trajectory_service(caller.call(lambda _: None))()
 
 
-
+test
 
 
 

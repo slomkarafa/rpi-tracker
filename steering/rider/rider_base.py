@@ -17,8 +17,8 @@ class BaseRider(ABC):
         self.prev_l = left
         self.prev_r = right
 
-        await self.l_m.run(right)
-        await self.r_m.run(left)
+        await self.l_m.run(int(right/2))
+        await self.r_m.run(int(left/2))
 
     async def stop(self, kind='SOFT'):
         print('stop')
