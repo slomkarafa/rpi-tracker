@@ -37,7 +37,7 @@ class PoseCaller:
         self.pose = None
 
     def call(self, resp):
-        self.pose = PoseData.parse(resp['pose'])
+        self.pose = PoseData.parse(resp.get('trajectory', [None])[-1]['pose'])
 
     def reset(self):
         self.pose = None

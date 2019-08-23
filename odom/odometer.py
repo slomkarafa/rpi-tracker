@@ -5,8 +5,8 @@ import sys
 
 sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/../')
 
-from odometer.encoder import Encoder
-from odometer.model import OdometerData
+from odom.encoder import Encoder
+from odom.model import OdometerData
 from config import ENCODERS, PIGPIO
 
 
@@ -27,7 +27,7 @@ class Odometer:
         pi = apigpio.Pi(loop)
         print('connecting..')
         await pi.connect((PIGPIO['HOST'], PIGPIO['PORT']))
-        print('connected')
+        print('pigpio connected')
         right_enc = await Encoder.create(pi, ENCODERS['RIGHT'])
         left_enc = await Encoder.create(pi, ENCODERS['LEFT'])
         return cls(left_enc, right_enc)

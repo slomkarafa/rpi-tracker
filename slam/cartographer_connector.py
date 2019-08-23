@@ -18,6 +18,7 @@ class CartographerConnector(Slam):
         self.submap_list_listener = None
         self.submap_query_service = None
         self.trajectory_query_service = None
+        self.time_service = None
         self.trajectory_result = PoseCaller()
         self.cli.run()
 
@@ -92,6 +93,21 @@ class CartographerConnector(Slam):
     def __del__(self):
         self.cli.terminate()
 
+    def register_time_service(self, main_callback=None):
+        self.time_service = roslibpy.Service(self.cli, '/read_metrics', '/cartographer_ros_msgs/ReadMetrics')
+
+        def call_time(exact_callback=None):
+            callback = exact_callback if exact_callback else main_callback
+
+            def time_wrapper(msg):
+                resp = msg['timestamp']
+                callback(resp)
+
+            request = roslibpy.ServiceRequest(dict())
+            self.time_service.call(request, time_wrapper, self.error)
+
+        return call_time
+
 
 def call(msg):
     pass
@@ -127,6 +143,7 @@ class SaveCaller:
 
         return wrapped
 
+
 class SaveCaller2:
     def __init__(self, base_name):
         self.base_name = base_name
@@ -142,6 +159,7 @@ class SaveCaller2:
 
     def __del__(self):
         self.file.close()
+
 
 class PoseCaller:
     def __init__(self):
@@ -163,27 +181,16 @@ def test_0(x, save, timer):
     service(save.call(timer.call(call, 1)), msg=1)
     time.sleep(1)
     print(f'2 {time.time()}')
-    service(save.call(timer.call(call, 2)),msg=2)
+    service(save.call(timer.call(call, 2)), msg=2)
     print(f'3 {time.time()}')
-    service(save.call(timer.call(call, 3)),msg=3)
+    service(save.call(timer.call(call, 3)), msg=3)
     # x.register_map_listener(caller)
     # x.register_map_listener(call)
     # x.register_trajectory_service(caller.call(lambda _: None))()
 
-
-if __name__ == '__main__':
-    save = SaveCaller2('data/test0.csv')
-    timer = TimeCaller()
-    x = CartographerConnector()
-
-    test_0(x, save, timer)
-    print('tu jestem')
-    try:
-        while True:
-            pass
-    except KeyboardInterrupt:
-        del save
-
+def test_time(x):
+    serv = x.register_time_service(call)
+    serv()
 
 def analyze():
     with open('data/test0.csv') as f:
@@ -197,3 +204,19 @@ def analyze():
             for z in y:
                 print(z)
             print()
+
+
+if __name__ == '__main__':
+    save = SaveCaller2('data/test0.csv')
+    timer = TimeCaller()
+    x = CartographerConnector()
+
+    test_0(x, save, timer)
+    # test_time(x)
+    print('tu jestem')
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        del save
+        analyze()

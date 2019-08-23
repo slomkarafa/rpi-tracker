@@ -25,6 +25,17 @@ MOTORS = {
     }
 }
 
+ENCODERS = {
+    "LEFT": {
+        'dir_0': 26,
+        'dir_1': 20
+    },
+    "RIGHT": {
+        'dir_0': 16,
+        'dir_1': 19
+    }
+}
+
 PIGPIO = {
     'HOST': 'localhost',
     "PORT": 8888
@@ -44,3 +55,5 @@ DISTRIBUTED = {
     'SLAM': 50045,
     'REST': 50046
 }
+
+SENSORS_INTERVAL = 0.05
