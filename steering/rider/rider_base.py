@@ -12,13 +12,20 @@ class BaseRider(ABC):
         self.prev_r = 0
 
     async def ride(self, left, right):
-        if self.prev_l is not left or self.prev_r is not right:
-            print(f"Ride: l{left} r{right}")
+        # if self.prev_l is not left or self.prev_r is not right:
+        #     print(f"Ride: l{left} r{right}")
         self.prev_l = left
         self.prev_r = right
 
-        await self.l_m.run(right)
-        await self.r_m.run(left)
+        MAX_DIFFERENCE = 40
+        if abs(left - right) > MAX_DIFFERENCE:
+            if abs(left)>abs(right):
+                left = right + MAX_DIFFERENCE* (1 if left > 0 else -1)
+            else:
+                right = left + MAX_DIFFERENCE* (1 if right > 0 else -1)
+
+        await self.l_m.run(int(right / 2))
+        await self.r_m.run(int(left / 2))
 
     async def stop(self, kind='SOFT'):
         print('stop')

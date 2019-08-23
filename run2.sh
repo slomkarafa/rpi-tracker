@@ -1,8 +1,9 @@
 source ros2/devel_isolated/setup.bash
-cd ros3 && roslaunch slam.launch
 
-workon tracker2
+ROS_MASTER_URI=http://localhost:11311
 
 fuser -k 8080/tcp
 
-PYTHONPATH=$PYTHONPATH:./ python communication/service.py & PYTHONPATH=$PYTHONPATH:./ python data_aquisition/collector.py & PYTHONPATH=$PYTHONPATH:./ python slam/map_service.py
+#roslaunch ros/slam.launch
+PYTHON=/home/pi/.virtualenvs/tracker2/bin/python
+PYTHONPATH=$PYTHONPATH:./ ${PYTHON} communication/service.py & PYTHONPATH=$PYTHONPATH:./ ${PYTHON} data_aquisition/collector.py & PYTHONPATH=$PYTHONPATH:./

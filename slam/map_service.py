@@ -17,14 +17,22 @@ def parse_map_and_pose(map_data, pose):
     data = bytearray([x + 1 for x in map_data['data']])
     shape = (map_data['info']['width'], map_data['info']['height'])
     resolution = map_data['info']['resolution']
+    # x_origin = map_data['info']['origin']['position']['x']
+    # y_origin = map_data['info']['origin']['position']['y']
+
     x_origin = map_data['info']['origin']['position']['x']
     y_origin = map_data['info']['origin']['position']['y']
+
     img = Image.frombuffer('L', shape, data, 'raw', 'L', 0, 1)
+    img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
     angle = int(math.degrees(math.acos(pose.orient.w) * 2))
     position = pose.posit
 
-    x = int((position.x-x_origin)/resolution)
+    # x = int((position.x-x_origin)/resolution)
+    # y = int((position.y-y_origin)/resolution)
+
+    x = shape[0]-int((position.x-x_origin)/resolution)
     y = int((position.y-y_origin)/resolution)
 
     print(x)

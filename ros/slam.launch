@@ -22,7 +22,7 @@
   <node name="cartographer_node" pkg="cartographer_ros"
       launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "
       type="cartographer_node" args="
-          -configuration_directory /home/pi/rpi-tracker/ros3
+          -configuration_directory /home/pi/rpi-tracker/ros
           -configuration_basename cartographer_config.lua"
       output="screen">
     <remap from="scan" to="scan" />
