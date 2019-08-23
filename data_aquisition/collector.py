@@ -5,7 +5,8 @@ import ujson as json
 import sys
 import time
 
-sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/../')
+ROOT = f'{os.path.dirname(os.path.realpath(__file__))}/../'
+sys.path.append(ROOT)
 
 from odom.model import OdometerData
 from odom.odometer import Odometer
@@ -77,17 +78,12 @@ class DataCollector:
                     while self.saver:
                         chkpt = time.time()
                         imu_res = self.imu.get_measurements()
-                        now = time.time()
-                        print(f'IMu time {now - chkpt}')
-
-                        chkpt2 = time.time()
                         odm_res = self.odometer.get_raw_counts()
-                        now2 = time.time()
-                        print(f'odm time {now2 - chkpt2}')
+                        now = time.time()
 
                         if self.saver:
                             await self.saver.add(now, imu_res, odm_res)
-                        print(f'Data collection time: {time.time() - chkpt}')
+                        # print(f'Data collection time: {time.time() - chkpt}')
                         await asyncio.sleep(SENSORS_INTERVAL + chkpt - time.time())
                 finally:
                     if self.saver:
@@ -108,7 +104,7 @@ async def main(sl, im, od):
             if resp['action'] == 'set_saving':
                 print(f'Saving switch {resp["data"]}')
                 if resp['data'] and not await collector.is_saver():
-                    await collector.set_saver(await Saver.create('../data/'))
+                    await collector.set_saver(await Saver.create(f'{ROOT}/data/'))
                 else:
                     await collector.finish()
             await ws.send(json.dumps({'action': 'saving', 'data': await collector.is_saver()}))
