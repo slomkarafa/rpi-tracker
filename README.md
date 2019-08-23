@@ -1,5 +1,7 @@
 # Testing - unplugged env
 
+## docs very outdated
+to be changed after writing the thesis
 
 install rplidar and cartographer from chineese website,
 https://xrp001.github.io/tutorial/2018/05/18/Jetson-tx2-rplidar-a2-cartographer/
