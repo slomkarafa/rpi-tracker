@@ -2,6 +2,6 @@ aiofiles==0.4.0
 httptools==0.0.11
 multidict==4.5.1
 tornado==4.5.3
-ujson==1.35
+ujson==5.4.0
 uvloop==0.11.3
 websockets==5.0.1
